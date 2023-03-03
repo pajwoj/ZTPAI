@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table (name = "users")
-class User {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long IDuser;
@@ -14,8 +14,7 @@ class User {
 
     private String password;
 
-    public User(Long IDuser, String email, String password) {
-        this.IDuser = IDuser;
+    public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
