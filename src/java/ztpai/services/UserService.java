@@ -27,6 +27,6 @@ public class UserService {
     }
 
     public String test() {
-        return "test";
+        return "USER TEST";
     }
 }

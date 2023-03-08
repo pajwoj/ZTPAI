@@ -1,7 +1,6 @@
 package ztpai.models;
 
 import jakarta.persistence.*;
-import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 
@@ -12,15 +11,13 @@ public class Station {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long IDstation;
 
-    @Column(unique = true)
-    @NonNull
+    @Column(unique = true, nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "IDstation")
     private ArrayList<Station> stations;
 
-    public Station(Long IDstation, @NonNull String name) {
-        this.IDstation = IDstation;
+    public Station(String name) {
         this.name = name;
     }
 
@@ -30,12 +27,11 @@ public class Station {
         return IDstation;
     }
 
-    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NonNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 }
