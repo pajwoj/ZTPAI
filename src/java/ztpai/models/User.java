@@ -1,6 +1,7 @@
 package ztpai.models;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
 
 @Entity
 @Table (name = "users")
@@ -9,9 +10,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long IDuser;
 
+    @NonNull
     @Column(unique = true)
     private String email;
 
+    @NonNull
     private String password;
 
     public User(String email, String password) {
@@ -23,10 +26,6 @@ public class User {
 
     public Long getIDuser() {
         return IDuser;
-    }
-
-    public void setIDuser(Long IDuser) {
-        this.IDuser = IDuser;
     }
 
     public String getEmail() {
