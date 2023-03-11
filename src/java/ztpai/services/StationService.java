@@ -1,9 +1,15 @@
 package ztpai.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import ztpai.models.Station;
 import ztpai.repositories.StationRepository;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 public class StationService {
@@ -14,12 +20,38 @@ public class StationService {
         this.repository = repository;
     }
 
-    public Station addStation(Station station) {
+    private Station addStation(Station station) {
         Station newStation = new Station(
                 station.getName()
         );
 
         return repository.save(newStation);
+    }
+
+    private static class StationRequest {
+        public String version;
+        public String timestamp;
+        public ArrayList<Map<String, String>> station;
+    }
+
+    public void updateStations() {
+        String uri = "https://api.irail.be/stations/?format=json&lang=en";
+
+        RestTemplate template = new RestTemplate();
+        ObjectMapper mapper = new ObjectMapper();
+
+        String json = template.getForObject(uri, String.class);
+
+        try {
+            StationRequest result = mapper.readValue(json, StationRequest.class);
+
+            for(Map<String, String> current : result.station)
+                this.addStation(new Station(current.get("name")));
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public String test() {
