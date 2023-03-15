@@ -10,5 +10,5 @@ TODO:
 
 - Autocomplete text fields
 - Results page
-- User persistence
-- User authentication
+- User persistence (registration)
+- User authentication (login, logout)
