@@ -8,7 +8,7 @@ ZTPAI class project
 
 TODO:
 
-- Autocomplete text fields
+- Autocomplete text fields ( return all where string.contains(input) => put into list in angular ? )
 - Results page
 - User persistence (registration)
 - User authentication (login, logout)
