@@ -8,7 +8,7 @@ ZTPAI class project
 
 TODO:
 
--Autocomplete text fields
--Results page
--User persistence
--User authentication
+- Autocomplete text fields
+- Results page
+- User persistence
+- User authentication
