@@ -9,6 +9,7 @@ import ztpai.models.Station;
 import ztpai.repositories.StationRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -31,7 +32,7 @@ public class StationService {
     private static class StationRequest {
         public String version;
         public String timestamp;
-        public ArrayList<Map<String, String>> station;
+        public List<Map<String, String>> station;
     }
 
     public void updateStations() {
@@ -45,8 +46,12 @@ public class StationService {
         try {
             StationRequest result = mapper.readValue(json, StationRequest.class);
 
-            for(Map<String, String> current : result.station)
-                this.addStation(new Station(current.get("name")));
+            for(Map<String, String> current : result.station) {
+                Station temp = new Station(current.get("name"));
+
+                if(repository.existsByName(temp.getName())) continue;
+                else this.addStation(temp);
+            }
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -54,7 +59,7 @@ public class StationService {
 
     }
 
-    public String test() {
-        return "STATION TEST";
+    public List<Station> findAll() {
+        return repository.findAll();
     }
 }

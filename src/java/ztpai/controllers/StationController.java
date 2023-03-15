@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ztpai.services.StationService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "api/stations")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -18,8 +20,8 @@ public class StationController {
         this.service = service;
     }
 
-    @GetMapping(path = "/")
-    public String test() {
-        return service.test();
+    @GetMapping(path = "/all")
+    public List findAll() {
+        return service.findAll();
     }
 }

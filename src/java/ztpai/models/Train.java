@@ -2,7 +2,7 @@ package ztpai.models;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table (name = "trains")
@@ -15,7 +15,7 @@ public class Train {
     private String name;
 
     @OneToMany(mappedBy = "IDtrain")
-    private ArrayList<Train> trains;
+    private List<Train> trains;
 
     public Train(String name) {
         this.name = name;
