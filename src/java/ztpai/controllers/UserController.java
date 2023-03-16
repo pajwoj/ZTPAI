@@ -1,10 +1,9 @@
 package ztpai.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import ztpai.dtos.RegistrationDTO;
 import ztpai.services.UserService;
 
 @RestController
@@ -18,8 +17,8 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping(path = "/register")
-    public String register(String email, String password) {
-        return service.register(email, password);
+    @PostMapping(path = "/register")
+    public ResponseEntity<String> register(@RequestBody RegistrationDTO user) {
+        return service.register(user);
     }
 }

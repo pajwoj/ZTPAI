@@ -11,8 +11,11 @@ export class UserService {
     this.url = 'http://localhost:8080/api/users'
   }
 
-  addUser(user: User) {
-    const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http.post<User>(this.url + "/register", user, {headers});
+  public addUser(user: User) {
+    const headers = new HttpHeaders();
+
+    headers.append('Content-Type', 'application/json');
+
+    return this.http.post(this.url + "/register", user, {responseType: "text", headers});
   }
 }

@@ -1,8 +1,11 @@
 package ztpai.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import ztpai.dtos.RegistrationDTO;
 import ztpai.models.User;
 import ztpai.repositories.UserRepository;
 
@@ -15,7 +18,7 @@ public class UserService {
         this.repository = repository;
     }
 
-    private User addUser(User user) {
+    private User addUser(RegistrationDTO user) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         User newUser = new User(
@@ -26,10 +29,10 @@ public class UserService {
         return repository.save(newUser);
     }
 
-    public String register(String email, String password) {
-        if(repository.existsByEmail(email)) return "User with email: " + email + " already exists!";
+    public ResponseEntity<String> register(RegistrationDTO user) {
+        if(repository.existsByEmail(user.getEmail())) return new ResponseEntity<>("User with email: " + user.getEmail() + " already exists!", HttpStatus.BAD_REQUEST);
 
-        this.addUser(new User(email, password));
-        return "Registration successful!";
+        this.addUser(user);
+        return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
     }
 }
