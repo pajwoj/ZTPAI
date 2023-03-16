@@ -15,7 +15,7 @@ public class UserService {
         this.repository = repository;
     }
 
-    public User addUser(User user) {
+    private User addUser(User user) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         User newUser = new User(
@@ -26,7 +26,10 @@ public class UserService {
         return repository.save(newUser);
     }
 
-    public String test() {
-        return "USER TEST";
+    public String register(String email, String password) {
+        if(repository.existsByEmail(email)) return "User with email: " + email + " already exists!";
+
+        this.addUser(new User(email, password));
+        return "Registration successful!";
     }
 }

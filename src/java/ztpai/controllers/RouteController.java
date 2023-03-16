@@ -9,7 +9,7 @@ import ztpai.services.RouteService;
 
 @RestController
 @RequestMapping(path = "api/routes")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class RouteController {
     private RouteService service;
 

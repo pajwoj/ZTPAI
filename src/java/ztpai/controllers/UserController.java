@@ -9,7 +9,7 @@ import ztpai.services.UserService;
 
 @RestController
 @RequestMapping(path = "api/users")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class UserController {
     private UserService service;
 
@@ -18,8 +18,8 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping(path = "/")
-    public String test() {
-        return service.test();
+    @GetMapping(path = "/register")
+    public String register(String email, String password) {
+        return service.register(email, password);
     }
 }

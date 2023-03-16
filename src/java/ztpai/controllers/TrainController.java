@@ -9,7 +9,7 @@ import ztpai.services.TrainService;
 
 @RestController
 @RequestMapping(path = "api/trains")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class TrainController {
     private TrainService service;
 

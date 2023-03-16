@@ -1,19 +1,64 @@
 <div class="d-flex flex-column justify-content-center">
-  <form class="justify-content-center border" novalidate>
+  <form
+    class="justify-content-center border"
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    method="post"
+  >
 
     <div class="p-2">
       <label for="email" class="form-label">email</label>
-      <input type="email" class="form-control" id="email" placeholder="john@example.com" required>
+      <input
+        type="email"
+        formControlName="email"
+        class="form-control"
+        id="email"
+        placeholder="john@example.com"
+        [ngClass]="{ 'is-invalid': submitted && form.controls['email'].errors }"
+      />
+
+      <div *ngIf="submitted && form.controls['email'].errors" class="invalid-feedback">
+        <div *ngIf="form.controls['email'].errors['required']">email is required</div>
+        <div *ngIf="form.controls['email'].errors['email']">email is invalid</div>
+      </div>
     </div>
 
     <div class="p-2">
       <label for="password" class="form-label">password</label>
-      <input type="password" class="form-control" id="password" placeholder="password" required>
+
+      <input
+        type="password"
+        formControlName="password"
+        class="form-control"
+        id="password"
+        placeholder="password"
+        [ngClass]="{ 'is-invalid': submitted && form.controls['password'].errors }"
+      />
+
+      <div *ngIf="submitted && form.controls['password'].errors" class="invalid-feedback">
+        <div *ngIf="form.controls['password'].errors['required']">password is required</div>
+        <div *ngIf="form.controls['password'].errors['minlength']">password must be at least 5 characters</div>
+        <div *ngIf="form.controls['password'].errors['maxlength']">password must not exceed 50 characters</div>
+      </div>
+
     </div>
 
     <div class="p-2">
       <label for="confirmPassword" class="form-label">confirm password</label>
-      <input type="password" class="form-control" id="confirmPassword" placeholder="confirm password" required>
+
+      <input
+        type="password"
+        formControlName="confirmPassword"
+        class="form-control"
+        id="confirmPassword"
+        placeholder="confirm password"
+        [ngClass]="{ 'is-invalid': submitted && form.controls['confirmPassword'].errors }"
+      />
+
+      <div *ngIf="submitted && form.controls['confirmPassword'].errors" class="invalid-feedback">
+        <div *ngIf="form.controls['confirmPassword'].errors['required']">confirm password is required</div>
+        <div *ngIf="form.controls['confirmPassword'].errors['matching']">passwords do not match</div>
+      </div>
     </div>
 
     <div class="p-2 text-center">
