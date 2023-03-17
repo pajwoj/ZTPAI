@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import Validation from "./validation";
 import {UserService} from "../services/user.service";
 import {User} from "../models/user";
-import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-register',
@@ -18,6 +17,7 @@ export class RegisterComponent implements OnInit {
     confirmPassword: new FormControl(''),
   });
   submitted = false;
+  res: string = '';
 
   constructor(private formBuilder: FormBuilder, private userService: UserService) {}
 
@@ -33,10 +33,14 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
+
     let user = new User(this.form.value.email, this.form.value.password);
-    console.log(user);
 
     if(this.form.invalid) return;
-    else this.userService.addUser(user).subscribe(response => console.log(response));
+    else this.userService.addUser(user).subscribe(response => this.res = response, error => this.res = error.error);
+
+    setTimeout(() => {
+      this.submitted = false;
+    }, 3000);
   }
 }

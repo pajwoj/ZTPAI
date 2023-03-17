@@ -64,4 +64,8 @@
       <button class="w-50 m-2 btn btn-primary btn-lg text-center" type="submit">register</button>
     </div>
   </form>
+
+  <div *ngIf="submitted" class="p-2 text-center">
+    {{res}}
+  </div>
 </div>
