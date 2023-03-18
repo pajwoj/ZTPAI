@@ -1,6 +1,10 @@
 package ztpai.models;
 
 import jakarta.persistence.*;
+import ztpai.models.Role.Role;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table (name = "users")
@@ -15,9 +19,17 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    public User(String email, String password) {
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "IDuser"),
+            inverseJoinColumns = @JoinColumn(name = "IDrole")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+    public User(String email, String password, Set<Role> roles) {
         this.email = email;
         this.password = password;
+        this.roles = roles;
     }
 
     public User() {}
@@ -40,5 +52,9 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 }

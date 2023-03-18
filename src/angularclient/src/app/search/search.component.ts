@@ -13,8 +13,6 @@ export class SearchComponent implements OnInit {
   constructor(private stationService: StationService) {}
 
   ngOnInit() {
-    this.stationService.findAll().subscribe(data => {
-      this.stations = data;
-    } );
+    this.stationService.findAll().subscribe(data => this.stations = data);
   }
 }

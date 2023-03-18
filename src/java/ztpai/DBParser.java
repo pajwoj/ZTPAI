@@ -9,30 +9,14 @@ import ztpai.services.UserService;
 
 @Component
 public class DBParser {
+    @Autowired
     private RouteService rService;
+    @Autowired
     private TrainService tService;
+    @Autowired
     private UserService uService;
+    @Autowired
     private StationService sService;
-
-    @Autowired
-    public void setrService(RouteService rService) {
-        this.rService = rService;
-    }
-
-    @Autowired
-    public void settService(TrainService tService) {
-        this.tService = tService;
-    }
-
-    @Autowired
-    public void setuService(UserService uService) {
-        this.uService = uService;
-    }
-
-    @Autowired
-    public void setsService(StationService sService) {
-        this.sService = sService;
-    }
 
     public void parse() {
         sService.updateStations();

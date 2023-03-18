@@ -7,12 +7,8 @@ import ztpai.repositories.TrainRepository;
 
 @Service
 public class TrainService {
-    private TrainRepository repository;
-
     @Autowired
-    public void setRepository(TrainRepository repository) {
-        this.repository = repository;
-    }
+    private TrainRepository repository;
 
     public Train addTrain(Train train) {
         Train newTrain = new Train(

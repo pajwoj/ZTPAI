@@ -11,12 +11,8 @@ import ztpai.services.RouteService;
 @RequestMapping(path = "api/routes")
 @CrossOrigin(origins = "*")
 public class RouteController {
-    private RouteService service;
-
     @Autowired
-    public void setService(RouteService service) {
-        this.service = service;
-    }
+    private RouteService service;
 
     @GetMapping(path = "/")
     public String test() {

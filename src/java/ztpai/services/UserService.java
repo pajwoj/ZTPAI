@@ -3,36 +3,85 @@ package ztpai.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ztpai.dtos.RegistrationDTO;
+import ztpai.dtos.UserDTO;
+import ztpai.models.Role.Role;
+import ztpai.models.Role.RoleEnum;
 import ztpai.models.User;
+import ztpai.repositories.RoleRepository;
 import ztpai.repositories.UserRepository;
+import ztpai.security.jwt.JWTService;
+import ztpai.services.UserDetails.UserDetailsServiceImplementation;
+
+import java.util.*;
 
 @Service
 public class UserService {
-    private UserRepository repository;
-
     @Autowired
-    public void setRepository(UserRepository repository) {
-        this.repository = repository;
-    }
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JWTService jwtService;
+    @Autowired
+    private PasswordEncoder encoder;
+    @Autowired
+    private UserDetailsServiceImplementation userDetailsService;
 
-    private User addUser(RegistrationDTO user) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private User addUser(UserDTO user) {
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName(RoleEnum.ROLE_USER);
+
+        roles.add(userRole);
 
         User newUser = new User(
                 user.getEmail(),
-                encoder.encode(user.getPassword())
+                encoder.encode(user.getPassword()),
+                roles
         );
 
-        return repository.save(newUser);
+        return userRepository.save(newUser);
     }
 
-    public ResponseEntity<String> register(RegistrationDTO user) {
-        if(repository.existsByEmail(user.getEmail())) return new ResponseEntity<>("User with email: " + user.getEmail() + " already exists!", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> register(UserDTO user) {
+        if(userRepository.existsByEmail(user.getEmail())) return new ResponseEntity<>("User with email: " + user.getEmail() + " already exists!", HttpStatus.BAD_REQUEST);
 
         this.addUser(user);
         return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> login(UserDTO user) {
+        try {
+            User userAttemptingLogin = userRepository.findByEmail(user.getEmail()).get();
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("No user with email" + user.getEmail() + " found.", HttpStatus.BAD_REQUEST);
+        }
+
+        User userAttemptingLogin = userRepository.findByEmail(user.getEmail()).get();
+
+        Collection<SimpleGrantedAuthority> authorities = new HashSet<>();
+        for(Role role : userAttemptingLogin.getRoles()) authorities.add(new SimpleGrantedAuthority(role.getName()));
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), authorities);
+
+        try {
+            authenticationManager.authenticate(authentication);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>("Bad credentials.", HttpStatus.UNAUTHORIZED);
+        }
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        String token = jwtService.generateToken(userDetails);
+
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 }

@@ -13,12 +13,8 @@ import java.util.List;
 @RequestMapping(path = "api/stations")
 @CrossOrigin(origins = "*")
 public class StationController {
-    private StationService service;
-
     @Autowired
-    public void setService(StationService service) {
-        this.service = service;
-    }
+    private StationService service;
 
     @GetMapping(path = "/all")
     public List findAll() {

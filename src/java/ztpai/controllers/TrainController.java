@@ -11,12 +11,8 @@ import ztpai.services.TrainService;
 @RequestMapping(path = "api/trains")
 @CrossOrigin(origins = "*")
 public class TrainController {
-    private TrainService service;
-
     @Autowired
-    public void setService(TrainService service) {
-        this.service = service;
-    }
+    private TrainService service;
 
     @GetMapping(path = "/")
     public String test() {

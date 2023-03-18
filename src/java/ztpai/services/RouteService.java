@@ -7,12 +7,8 @@ import ztpai.repositories.RouteRepository;
 
 @Service
 public class RouteService {
-    private RouteRepository repository;
-
     @Autowired
-    public void setRepository(RouteRepository repository) {
-        this.repository = repository;
-    }
+    private RouteRepository repository;
 
     public Route addRoute(Route route) {
         Route newRoute = new Route(

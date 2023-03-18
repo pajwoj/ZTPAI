@@ -1,12 +1,12 @@
 package ztpai.dtos;
 
-public class RegistrationDTO {
+public class UserDTO {
     private String email;
     private String password;
 
-    public RegistrationDTO() {}
+    public UserDTO() {}
 
-    public RegistrationDTO(String email, String password) {
+    public UserDTO(String email, String password) {
         this.email = email;
         this.password = password;
     }

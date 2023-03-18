@@ -14,12 +14,8 @@ import java.util.Map;
 
 @Service
 public class StationService {
-    private StationRepository repository;
-
     @Autowired
-    public void setRepository(StationRepository repository) {
-        this.repository = repository;
-    }
+    private StationRepository repository;
 
     private Station addStation(Station station) {
         Station newStation = new Station(
