@@ -1,5 +1,6 @@
 package ztpai.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO user) {
-        return service.login(user);
+    public ResponseEntity<?> login(@RequestBody UserDTO user, HttpServletResponse res) {
+        return service.login(user, res);
     }
 }
