@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ztpai.dtos.UserDTO;
+import ztpai.models.User;
 import ztpai.services.UserService;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/users")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class UserController {
     @Autowired
     private UserService service;
@@ -29,5 +32,10 @@ public class UserController {
     @PostMapping(path = "/logout")
     public ResponseEntity<?> logout(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         return service.logout(req, res);
+    }
+
+    @GetMapping(path = "/user")
+    public Optional<User> getUser(String email) {
+        return service.getUser(email);
     }
 }

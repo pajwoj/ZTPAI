@@ -56,12 +56,12 @@ public class SecurityConfig {
                 .csrf().disable()
 
                 .authorizeHttpRequests()
-                .requestMatchers("/api/users/*")
+                .requestMatchers("/api/users/*", "/api/stations/*")
                 .permitAll()
 
                 .anyRequest().authenticated().and()
 
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and()
 
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);

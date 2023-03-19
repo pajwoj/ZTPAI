@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import Validation from "../validation";
 import {UserService} from "../services/user.service";
@@ -17,7 +17,7 @@ export class RegisterComponent implements OnInit {
     confirmPassword: new FormControl(''),
   });
   submitted = false;
-  res: string = '';
+  @Input() res: string = '';
 
   constructor(private formBuilder: FormBuilder, private userService: UserService) {}
 
@@ -37,7 +37,7 @@ export class RegisterComponent implements OnInit {
     let user = new User(this.form.value.email, this.form.value.password);
 
     if(this.form.invalid) return;
-    else this.userService.addUser(user).subscribe(response => this.res = response, error => this.res = error.error);
+    else this.userService.register(user).subscribe(response => this.res = response, error => this.res = error.error);
 
     setTimeout(() => {
       this.submitted = false;

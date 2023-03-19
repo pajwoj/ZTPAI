@@ -16,11 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import ztpai.dtos.UserDTO;
 import ztpai.models.Role.Role;
@@ -74,7 +71,7 @@ public class UserService {
         try {
             userRepository.findByEmail(user.getEmail()).get();
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>("No user with email" + user.getEmail() + " found.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No user with email " + user.getEmail() + " found.", HttpStatus.BAD_REQUEST);
         }
 
         if(!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken))
@@ -96,21 +93,27 @@ public class UserService {
         }
 
         SecurityContext context = SecurityContextHolder.getContext();
+        SecurityContextHolder.setContext(context);
         context.setAuthentication(authentication);
 
         HttpSession session = req.getSession();
+        session.setMaxInactiveInterval(600);
         session.setAttribute("SPRING_SECURITY_CONTEXT", context);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String jwtToken = jwtService.generateToken(userDetails);
 
         Cookie jwtCookie = new Cookie("jwt", jwtToken);
+        jwtCookie.setPath("/");
         res.addCookie(jwtCookie);
 
-        return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+        session.setAttribute("jwt", jwtToken);
+
+        return new ResponseEntity<>("Successfully logged in!", HttpStatus.OK);
     }
 
     public ResponseEntity<?> logout(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+        var a = SecurityContextHolder.getContext().getAuthentication();
         if(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)
             return new ResponseEntity<>("You are not logged in!", HttpStatus.BAD_REQUEST);
 
@@ -122,9 +125,14 @@ public class UserService {
         res.addCookie(removeSessionCookie);
 
         Cookie removeJWTCookie = new Cookie("jwt", null);
+        removeJWTCookie.setPath("/");
         removeJWTCookie.setMaxAge(0);
         res.addCookie(removeJWTCookie);
 
         return new ResponseEntity<>("Succesfully logged out!", HttpStatus.OK);
+    }
+
+    public Optional<User> getUser(String email) {
+        return userRepository.findByEmail(email);
     }
 }
