@@ -33,9 +33,4 @@ public class UserController {
     public ResponseEntity<?> logout(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         return service.logout(req, res);
     }
-
-    @GetMapping(path = "/user")
-    public String getCurrentUser() {
-        return service.getCurrentUser();
-    }
 }

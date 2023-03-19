@@ -114,7 +114,6 @@ public class UserService {
     }
 
     public ResponseEntity<?> logout(HttpServletRequest req, HttpServletResponse res) throws ServletException {
-        var a = SecurityContextHolder.getContext().getAuthentication();
         if(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)
             return new ResponseEntity<>("You are not logged in!", HttpStatus.BAD_REQUEST);
 
@@ -131,12 +130,5 @@ public class UserService {
         res.addCookie(removeJWTCookie);
 
         return new ResponseEntity<>("Succesfully logged out!", HttpStatus.OK);
-    }
-
-    public String getCurrentUser() {
-        if(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof String) return "Not logged in.";
-
-        UserDetailsImplementation principal = (UserDetailsImplementation) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return principal.getEmail();
     }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {User} from "../models/user";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -33,9 +34,5 @@ export class UserService {
     headers.append('Content-Type', 'application/json');
 
     return this.http.post(this.url + "/logout", "", {responseType: "text", withCredentials: true, headers});
-  }
-
-  public getUser() {
-    return this.http.get(this.url + "/user");
   }
 }
