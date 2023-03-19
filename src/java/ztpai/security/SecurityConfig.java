@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import ztpai.security.jwt.AuthenticationTokenFilter;
 import ztpai.services.UserDetails.UserDetailsServiceImplementation;
 
@@ -53,10 +55,13 @@ public class SecurityConfig {
         http
                 .csrf().disable()
 
-                .authorizeHttpRequests().requestMatchers("/api/users/*").permitAll()
+                .authorizeHttpRequests()
+                .requestMatchers("/api/users/*")
+                .permitAll()
+
                 .anyRequest().authenticated().and()
 
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
 
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);

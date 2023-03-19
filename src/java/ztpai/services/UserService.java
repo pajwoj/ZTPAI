@@ -1,22 +1,27 @@
 package ztpai.services;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
 import ztpai.dtos.UserDTO;
 import ztpai.models.Role.Role;
 import ztpai.models.Role.RoleEnum;
@@ -65,35 +70,61 @@ public class UserService {
         return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> login(UserDTO user, HttpServletResponse res) {
+    public ResponseEntity<?> login(UserDTO user, HttpServletRequest req, HttpServletResponse res) {
         try {
-            User userAttemptingLogin = userRepository.findByEmail(user.getEmail()).get();
+            userRepository.findByEmail(user.getEmail()).get();
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>("No user with email" + user.getEmail() + " found.", HttpStatus.BAD_REQUEST);
         }
+
+        if(!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken))
+            return new ResponseEntity<>("Already logged in!", HttpStatus.OK);
 
         User userAttemptingLogin = userRepository.findByEmail(user.getEmail()).get();
 
         Collection<SimpleGrantedAuthority> authorities = new HashSet<>();
         for(Role role : userAttemptingLogin.getRoles()) authorities.add(new SimpleGrantedAuthority(role.getName()));
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), authorities);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), authorities);
+
+        Authentication authentication;
 
         try {
-            authenticationManager.authenticate(authentication);
+            authentication = authenticationManager.authenticate(token);
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>("Bad credentials.", HttpStatus.UNAUTHORIZED);
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        String token = jwtService.generateToken(userDetails);
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(authentication);
 
-        Cookie jwtCookie = new Cookie("jwt", token);
+        HttpSession session = req.getSession();
+        session.setAttribute("SPRING_SECURITY_CONTEXT", context);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        String jwtToken = jwtService.generateToken(userDetails);
+
+        Cookie jwtCookie = new Cookie("jwt", jwtToken);
         res.addCookie(jwtCookie);
 
-        Cookie sessionCookie = new Cookie("JSESSIONID", RequestContextHolder.currentRequestAttributes().getSessionId());
-        res.addCookie(sessionCookie);
+        return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+    }
 
-        return new ResponseEntity<>(token, HttpStatus.OK);
+    public ResponseEntity<?> logout(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+        if(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)
+            return new ResponseEntity<>("You are not logged in!", HttpStatus.BAD_REQUEST);
+
+        req.getSession().invalidate();
+        req.logout();
+
+        Cookie removeSessionCookie = new Cookie("JSESSIONID", null);
+        removeSessionCookie.setMaxAge(0);
+        res.addCookie(removeSessionCookie);
+
+        Cookie removeJWTCookie = new Cookie("jwt", null);
+        removeJWTCookie.setMaxAge(0);
+        res.addCookie(removeJWTCookie);
+
+        return new ResponseEntity<>("Succesfully logged out!", HttpStatus.OK);
     }
 }
