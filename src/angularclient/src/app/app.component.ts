@@ -14,14 +14,8 @@ export class AppComponent {
   constructor(private userService: UserService, private router: Router) {}
 
   onClick(): void {
-    let jwt: string = document.cookie;
-    let jwtDecoded: any = jwtDecode(jwt);
-    let user: any = this.userService.getUser(jwtDecoded.sub);
+    this.userService.logout().subscribe(response => this.res = response, error => this.res = error.error);
 
-    console.log(user);
-
-    //this.userService.logout(user).subscribe(response => this.res = response, error => this.res = error.error);
-
-    //this.router.navigate(['/login']);
+    this.router.navigate(['/search']);
   }
 }

@@ -26,6 +26,7 @@ import ztpai.models.User;
 import ztpai.repositories.RoleRepository;
 import ztpai.repositories.UserRepository;
 import ztpai.security.jwt.JWTService;
+import ztpai.services.UserDetails.UserDetailsImplementation;
 import ztpai.services.UserDetails.UserDetailsServiceImplementation;
 
 import java.util.*;
@@ -132,7 +133,10 @@ public class UserService {
         return new ResponseEntity<>("Succesfully logged out!", HttpStatus.OK);
     }
 
-    public Optional<User> getUser(String email) {
-        return userRepository.findByEmail(email);
+    public String getCurrentUser() {
+        if(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof String) return "Not logged in.";
+
+        UserDetailsImplementation principal = (UserDetailsImplementation) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return principal.getEmail();
     }
 }

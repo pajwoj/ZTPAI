@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/user")
-    public Optional<User> getUser(String email) {
-        return service.getUser(email);
+    public String getCurrentUser() {
+        return service.getCurrentUser();
     }
 }

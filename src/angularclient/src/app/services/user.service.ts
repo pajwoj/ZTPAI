@@ -27,16 +27,15 @@ export class UserService {
     return this.http.post(this.url + "/login", user, {responseType: "text", withCredentials: true, headers});
   }
 
-  public logout(user: User) {
+  public logout() {
     const headers = new HttpHeaders();
 
     headers.append('Content-Type', 'application/json');
 
-    return this.http.post(this.url + "/logout", user, {responseType: "text", withCredentials: true, headers});
+    return this.http.post(this.url + "/logout", "", {responseType: "text", withCredentials: true, headers});
   }
 
-  public getUser(email: String) {
-    console.log(this.url + "/user?email=" + email);
-    return this.http.get(this.url + "/user?email=" + email);
+  public getUser() {
+    return this.http.get(this.url + "/user");
   }
 }
