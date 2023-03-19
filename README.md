@@ -10,4 +10,3 @@ TODO:
 
 - Autocomplete text fields ( return all where string.contains(input) => put into list in angular ? )
 - Results page
-- User authentication (login, logout)
