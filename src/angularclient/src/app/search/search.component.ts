@@ -9,10 +9,41 @@ import {StationService} from "../services/station.service";
 })
 export class SearchComponent implements OnInit {
   stations: Station[] = [];
+  stationNames: string[] = [];
+  displayBelow: boolean = false;
+  toTextField: string = '';
+  fromTextField: string = '';
 
   constructor(private stationService: StationService) {}
+  private getStations(): void {
+    this.stationService.findAll().subscribe(res => res.map(result => this.stations.push(result)));
+  }
 
   ngOnInit() {
-    this.stationService.findAll().subscribe(data => this.stations = data);
+    this.getStations();
+  }
+
+  private loadNames(): string[] {
+    let result: string[] = [];
+
+    this.stations.forEach(function (current) {
+      result.push(current.name);
+    })
+
+    return result;
+  }
+
+  public initNames(): void {
+    this.stationNames = this.loadNames();
+    this.stationNames.sort();
+  }
+
+  public displaySelection(): string {
+    let result: string = '';
+
+    result = this.fromTextField + ", " + this.toTextField;
+
+    this.displayBelow = true;
+    return result;
   }
 }

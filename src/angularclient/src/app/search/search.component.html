@@ -1,23 +1,89 @@
 <div class="d-flex flex-column justify-content-center">
   <form class="justify-content-center border" novalidate>
-
     <div class="p-2">
-      <label for="from" class="form-label">from</label>
-      <input type="text" class="form-control" id="from" placeholder="Warszawa Centralna" value="" required>
+      <label
+        for="from"
+        class="form-label"
+      >
+        from
+      </label>
+
+      <input
+        type="text"
+        class="form-control"
+        id="from"
+        placeholder="Antwerp-Central"
+        value=""
+        list="fromList"
+        name="fromTextField"
+        (click)="initNames()"
+        (keyup)="initNames()"
+        [(ngModel)]="fromTextField"
+        required
+      />
+
+      <datalist id="fromList">
+        <option *ngFor="let item of stationNames" [value]="item">{{item}}</option>
+      </datalist>
     </div>
 
     <div class="p-2">
-      <label for="to" class="form-label">to</label>
-      <input type="text" class="form-control" id="to" placeholder="Kraków Główny" value="" required>
+      <label
+        for="to"
+        class="form-label"
+      >
+        to
+      </label>
+
+      <input
+        type="text"
+        class="form-control"
+        id="to"
+        placeholder="Antwerp-Central"
+        value=""
+        list="toList"
+        name="toTextField"
+        (click)="initNames()"
+        (keyup)="initNames()"
+        [(ngModel)]="toTextField"
+        required
+      />
+
+      <datalist id="toList">
+        <option *ngFor="let item of stationNames" [value]="item">{{item}}</option>
+      </datalist>
     </div>
 
     <div class="p-2">
-      <label for="time" class="form-label">time</label>
-      <input type="time" class="form-control" id="time" placeholder="" value="" required>
+      <label
+        for="time"
+        class="form-label"
+      >
+        time
+      </label>
+
+      <input
+        type="time"
+        class="form-control"
+        id="time"
+        placeholder=""
+        value=""
+        required
+      />
     </div>
 
     <div class="p-2 text-center">
-      <button class="w-50 m-2 btn btn-primary btn-lg text-center" type="submit">search</button>
+      <button
+        class="w-50 m-2 btn btn-primary btn-lg text-center"
+        type="submit"
+        (click)="displaySelection()"
+      >
+        search
+      </button>
     </div>
   </form>
+
+  <div *ngIf="displayBelow" class="p-2 text-center">
+    {{displaySelection()}}
+  </div>
 </div>
