@@ -14,9 +14,6 @@ public class Station {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "IDstation")
-    private List<Station> stations;
-
     public Station(String name) {
         this.name = name;
     }
