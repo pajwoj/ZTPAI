@@ -8,7 +8,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
-import { TrainsComponent } from './trains/trains.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './search/search.component';
 import {FormsModule} from "@angular/forms";
@@ -18,7 +17,6 @@ import {FormsModule} from "@angular/forms";
     AppComponent,
     RegisterComponent,
     LoginComponent,
-    TrainsComponent,
     ProfileComponent,
     SearchComponent
   ],

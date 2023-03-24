@@ -77,7 +77,7 @@ export class SearchComponent implements OnInit {
         let queriedResult;
 
         let connections: Stop[][] = [];
-        this.results = ['results'];
+        this.results = ['Results: <br>'];
 
         for (const [key, value] of Object.entries(connectionList))
           if (key == 'connection') queriedResult = value;
@@ -85,8 +85,8 @@ export class SearchComponent implements OnInit {
         queriedResult.forEach(function (current: Object) {
           let route: Stop[] = [];
           for (const [key, value] of Object.entries(current)) {
-            // console.log(key)
-            // console.log(value)
+            // console.log(key);
+            // console.log(value);
             if (key == 'departure') {
               for (const [departureKey, departureObject] of Object.entries(value)) {
 
@@ -108,24 +108,43 @@ export class SearchComponent implements OnInit {
 
                     let i: number = 0;
                     if (stopsKey == "stop") {
-                      stopsObject.forEach(function (currentStop: Object) {
-                        let currentStopArray = Object.values(currentStop);
 
-                        if (i != 0) {
-                          let timestamp: number = Number(currentStopArray.at(6) * 1000);
-                          route.push(new Stop('', '', new Date(0), ''));
+                      if (stopsObject.length == 1) {
+                        let currentStopArray = Object.values(stopsObject as Object);
+                        let viaStopStation: string = '';
+                        let viaStopDepartureTime: number = 0;
 
-                          route.at(-1)!.departureStation = route.at(-2)!.arrivalStation;
-                          route.at(-1)!.arrivalStation = currentStopArray.at(1);
-                          route.at(-1)!.time = new Date(timestamp);
-                          route.at(-1)!.trainName = route.at(-2)!.trainName;
-
-                          i++;
-                        } else {
-                          route.at(-1)!.arrivalStation = currentStopArray.at(1);
-                          i++;
+                        for(const [oneStopKey, oneStopObject] of Object.entries(currentStopArray.at(0))) {
+                          if(oneStopKey == "station") viaStopStation = oneStopObject as string;
+                          if(oneStopKey == "scheduledDepartureTime") viaStopDepartureTime = oneStopObject as number;
                         }
-                      })
+
+                        route.at(-1)!.arrivalStation = viaStopStation;
+                        route.push(new Stop('', '', new Date(0), ''));
+
+                        route.at(-1)!.departureStation = route.at(-2)!.arrivalStation;
+                        route.at(-1)!.time = new Date(viaStopDepartureTime * 1000);
+                        route.at(-1)!.trainName = route.at(-2)!.trainName;
+                      } else {
+                        stopsObject.forEach(function (currentStop: Object) {
+                          let currentStopArray = Object.values(currentStop);
+
+                          if (i != 0) {
+                            let timestamp: number = Number(currentStopArray.at(6) * 1000);
+                            route.push(new Stop('', '', new Date(0), ''));
+
+                            route.at(-1)!.departureStation = route.at(-2)!.arrivalStation;
+                            route.at(-1)!.arrivalStation = currentStopArray.at(1);
+                            route.at(-1)!.time = new Date(timestamp);
+                            route.at(-1)!.trainName = route.at(-2)!.trainName;
+
+                            i++;
+                          } else {
+                            route.at(-1)!.arrivalStation = currentStopArray.at(1);
+                            i++;
+                          }
+                        })
+                      }
                     }
                   }
                 }
@@ -135,7 +154,7 @@ export class SearchComponent implements OnInit {
             if (key == 'arrival') {
               for (const [arrivalKey, arrivalObject] of Object.entries(value)) {
                 if (arrivalKey == 'station') {
-                  route.push(new Stop('FINAL STATION', arrivalObject as string, new Date(0), ''));
+                  route.push(new Stop('DESTINATION REACHED', arrivalObject as string, new Date(0), ''));
                 }
 
                 if (arrivalKey == 'time') {
@@ -155,9 +174,9 @@ export class SearchComponent implements OnInit {
                 if (typeof currentVia != "string") {
                   for (const [viaKey, viaObject] of Object.entries(currentVia.at(0))) {
 
-                    if(viaKey == "arrival") {
-                      for(const [viaArrivalKey, viaArrivalObject] of Object.entries(viaObject as Object)) {
-                        if(viaArrivalKey == 'time') {
+                    if (viaKey == "arrival") {
+                      for (const [viaArrivalKey, viaArrivalObject] of Object.entries(viaObject as Object)) {
+                        if (viaArrivalKey == 'time') {
                           //sort by time so stops are in correct order
                           route.sort((a, b) => {
                             return a.time > b.time ? 1 : -1;
@@ -173,10 +192,10 @@ export class SearchComponent implements OnInit {
                       }
                     }
 
-                    if(viaKey == "departure") {
-                      for(const [viaDepartureKey, viaDepartureObject] of Object.entries(viaObject as Object)) {
+                    if (viaKey == "departure") {
+                      for (const [viaDepartureKey, viaDepartureObject] of Object.entries(viaObject as Object)) {
 
-                        if(viaDepartureKey == "stops") {
+                        if (viaDepartureKey == "stops") {
                           for (const [stopsKey, stopsObject] of Object.entries(viaDepartureObject as Object)) {
                             let i: number = 0;
                             if (stopsKey == "stop") {
@@ -202,7 +221,7 @@ export class SearchComponent implements OnInit {
                           }
                         }
 
-                        if(viaDepartureKey == 'time') {
+                        if (viaDepartureKey == 'time') {
                           let timestamp = viaDepartureObject as number * 1000;
                           route.push(new Stop('', '', new Date(0), ''))
 
@@ -210,17 +229,17 @@ export class SearchComponent implements OnInit {
                           route.at(-1)!.departureStation = route.at(-2)!.arrivalStation;
                         }
 
-                        if(viaDepartureKey == 'vehicle') {
+                        if (viaDepartureKey == 'vehicle') {
                           route.at(-1)!.trainName = viaDepartureObject as string;
                         }
                       }
                     }
 
-                    if(viaKey == "station") {
+                    if (viaKey == "station") {
                       let setFlag: boolean = false;
                       route.forEach(function (current: Stop) {
-                        if(current.arrivalStation == "") {
-                          if(!setFlag) {
+                        if (current.arrivalStation == "") {
+                          if (!setFlag) {
                             current.arrivalStation = viaObject as string;
                             setFlag = true;
                           }
@@ -239,26 +258,33 @@ export class SearchComponent implements OnInit {
           });
 
           route.forEach(function (current: Stop, index: number) {
-            if(current.departureStation == "") {
+            if (current.departureStation == "") {
               current.departureStation = route.at(index - 1)!.arrivalStation;
             }
           });
 
           let index: number = route.length - 1;
 
-          for(index; index >= 0; index--) {
-            if(route.at(index)!.arrivalStation == "") {
+          for (index; index >= 0; index--) {
+            if (route.at(index)!.arrivalStation == "") {
               route.at(index)!.arrivalStation = route.at(index + 1)!.arrivalStation;
             }
           }
 
-          console.log(route)
           connections.push(route);
+        })
+
+        connections.forEach((currentRoute) => {
+          currentRoute.forEach((currentStop) => {
+            this.results.push(currentStop.toString());
+          })
+          this.results.push("-----------------------------------------------------------------<br>")
         })
       },
 
       error => {
         this.errorResponse = true;
+        this.results = [];
         if (error.status == 404) this.errorResults = "Connection not found. Try again with different parameters!";
         if (error.status == 500) this.errorResults = "Internal server error. Try again later!";
         if (error.status == 504) this.errorResults = "Connection timed out. Try again later!";
@@ -267,6 +293,16 @@ export class SearchComponent implements OnInit {
 
     this.displaySearch = false;
     this.displayResults = true;
+  }
+
+  public showResults(results: string[]): string {
+    let result: string = '';
+
+    results.forEach(function (current) {
+      result += current;
+    })
+
+    return result;
   }
 
   private createQueryLink(from: string, to: string, time: string): string {

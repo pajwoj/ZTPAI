@@ -44,6 +44,6 @@ export class Stop {
   }
 
   public toString(): string {
-    return this._departureStation + " - " + this._arrivalStation + ", " + this._time + ", " + this._trainName;
+    return this._departureStation + " - " + this._arrivalStation + ", " + this._time.toLocaleTimeString("pl-PL") + ", " + this._trainName + "<br>";
   }
 }
