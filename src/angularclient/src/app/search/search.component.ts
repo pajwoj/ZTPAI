@@ -87,11 +87,21 @@ export class SearchComponent implements OnInit {
           for (const [key, value] of Object.entries(current)) {
             // console.log(key)
             // console.log(value)
-
-            route.push(new Stop('', '', new Date(0), ''));
             if (key == 'departure') {
               for (const [departureKey, departureObject] of Object.entries(value)) {
-                if (departureKey == 'station') route.at(0)!.departureStation = departureObject as string;
+
+                if (departureKey == 'station') {
+                  route.push(new Stop(departureObject as string, '', new Date(0), ''));
+                }
+
+                if (departureKey == 'time') {
+                  let timestamp = departureObject as number * 1000;
+                  route.at(-1)!.time = (new Date(timestamp));
+                }
+
+                if (departureKey == 'vehicle') {
+                  route.at(-1)!.trainName = departureObject as string;
+                }
 
                 if (departureKey == 'stops') {
                   for (const [stopsKey, stopsObject] of Object.entries(departureObject as Object)) {
@@ -102,66 +112,147 @@ export class SearchComponent implements OnInit {
                         let currentStopArray = Object.values(currentStop);
 
                         if (i != 0) {
-                          route.push(new Stop('', '', new Date(0), ''));
-                          route.at(i)!.arrivalStation = currentStopArray.at(1);
-                          route.at(i)!.departureStation = route.at(i - 1)!.arrivalStation;
-                          route.at(i)!.trainName = route.at(i - 1)!.trainName;
-
                           let timestamp: number = Number(currentStopArray.at(6) * 1000);
-                          route.at(i)!.departureTime = (new Date(timestamp));
+                          route.push(new Stop('', '', new Date(0), ''));
+
+                          route.at(-1)!.departureStation = route.at(-2)!.arrivalStation;
+                          route.at(-1)!.arrivalStation = currentStopArray.at(1);
+                          route.at(-1)!.time = new Date(timestamp);
+                          route.at(-1)!.trainName = route.at(-2)!.trainName;
+
                           i++;
                         } else {
-                          route.at(i)!.arrivalStation = currentStopArray.at(1);
+                          route.at(-1)!.arrivalStation = currentStopArray.at(1);
                           i++;
                         }
                       })
                     }
                   }
                 }
-
-                if (departureKey == 'time') {
-                  let timestamp = departureObject as number * 1000;
-                  route.at(0)!.departureTime = (new Date(timestamp));
-                }
-
-                if (departureKey == 'vehicle') {
-                  route.forEach(function (current: Stop, index) {
-                    current.trainName = departureObject as string;
-                    if (current.trainName == "") current.trainName = route.at(index - 1)!.trainName;
-                  })
-                }
               }
             }
 
             if (key == 'arrival') {
               for (const [arrivalKey, arrivalObject] of Object.entries(value)) {
-                if (arrivalKey == 'station') route.at(-1)!.arrivalStation = arrivalObject as string;
+                if (arrivalKey == 'station') {
+                  route.push(new Stop('FINAL STATION', arrivalObject as string, new Date(0), ''));
+                }
 
                 if (arrivalKey == 'time') {
                   let timestamp = arrivalObject as number * 1000;
-                  route.at(-1)!.departureTime = (new Date(timestamp));
+                  route.at(-1)!.time = (new Date(timestamp));
                 }
 
-                if (arrivalKey == 'vehicle') route.at(-1)!.trainName = arrivalObject as string;
+                if (arrivalKey == 'vehicle') {
+                  route.at(-1)!.trainName = arrivalObject as string;
+                }
               }
             }
 
             if (key == 'vias') {
               let viaArray = Object.values(value);
               viaArray.forEach(function (currentVia: any) {
-                if(typeof currentVia != "string") {
-                  for(const [currentViaKey, currentViaValue] of Object.entries(currentVia.at(0)))
-                    console.log(currentViaKey); //id, arrival, departure etc.
+                if (typeof currentVia != "string") {
+                  for (const [viaKey, viaObject] of Object.entries(currentVia.at(0))) {
+
+                    if(viaKey == "arrival") {
+                      for(const [viaArrivalKey, viaArrivalObject] of Object.entries(viaObject as Object)) {
+                        if(viaArrivalKey == 'time') {
+                          //sort by time so stops are in correct order
+                          route.sort((a, b) => {
+                            return a.time > b.time ? 1 : -1;
+                          });
+
+                          let timestamp = viaArrivalObject as number * 1000;
+                          route.push(new Stop('', '', new Date(0), ''))
+
+                          route.at(-1)!.time = new Date(timestamp);
+                          route.at(-1)!.departureStation = route.at(-3)!.arrivalStation;
+                          route.at(-1)!.trainName = route.at(-3)!.trainName;
+                        }
+                      }
+                    }
+
+                    if(viaKey == "departure") {
+                      for(const [viaDepartureKey, viaDepartureObject] of Object.entries(viaObject as Object)) {
+
+                        if(viaDepartureKey == "stops") {
+                          for (const [stopsKey, stopsObject] of Object.entries(viaDepartureObject as Object)) {
+                            let i: number = 0;
+                            if (stopsKey == "stop") {
+                              stopsObject.forEach(function (currentStop: Object) {
+                                let currentStopArray = Object.values(currentStop);
+
+                                if (i != 0) {
+                                  let timestamp: number = Number(currentStopArray.at(6) * 1000);
+                                  route.push(new Stop('', '', new Date(0), ''));
+
+                                  route.at(-1)!.departureStation = route.at(-2)!.arrivalStation;
+                                  route.at(-1)!.arrivalStation = currentStopArray.at(1);
+                                  route.at(-1)!.time = new Date(timestamp);
+                                  route.at(-1)!.trainName = route.at(-2)!.trainName;
+
+                                  i++;
+                                } else {
+                                  route.at(-1)!.arrivalStation = currentStopArray.at(1);
+                                  i++;
+                                }
+                              })
+                            }
+                          }
+                        }
+
+                        if(viaDepartureKey == 'time') {
+                          let timestamp = viaDepartureObject as number * 1000;
+                          route.push(new Stop('', '', new Date(0), ''))
+
+                          route.at(-1)!.time = new Date(timestamp);
+                          route.at(-1)!.departureStation = route.at(-2)!.arrivalStation;
+                        }
+
+                        if(viaDepartureKey == 'vehicle') {
+                          route.at(-1)!.trainName = viaDepartureObject as string;
+                        }
+                      }
+                    }
+
+                    if(viaKey == "station") {
+                      let setFlag: boolean = false;
+                      route.forEach(function (current: Stop) {
+                        if(current.arrivalStation == "") {
+                          if(!setFlag) {
+                            current.arrivalStation = viaObject as string;
+                            setFlag = true;
+                          }
+                        }
+                      });
+                    }
+
+                  }
                 }
               });
             }
           }
-
           //sort by time so stops are in correct order
           route.sort((a, b) => {
-            return a.departureTime > b.departureTime ? 1 : -1;
+            return a.time > b.time ? 1 : -1;
           });
 
+          route.forEach(function (current: Stop, index: number) {
+            if(current.departureStation == "") {
+              current.departureStation = route.at(index - 1)!.arrivalStation;
+            }
+          });
+
+          let index: number = route.length - 1;
+
+          for(index; index >= 0; index--) {
+            if(route.at(index)!.arrivalStation == "") {
+              route.at(index)!.arrivalStation = route.at(index + 1)!.arrivalStation;
+            }
+          }
+
+          console.log(route)
           connections.push(route);
         })
       },

@@ -1,13 +1,13 @@
 export class Stop {
   private _departureStation: string = '';
   private _arrivalStation: string = '';
-  private _departureTime: Date;
+  private _time: Date;
   private _trainName: string = '';
 
   constructor(departureStation: string, arrivalStation: string, departureTime: Date, trainName: string) {
     this._departureStation = departureStation;
     this._arrivalStation = arrivalStation;
-    this._departureTime = departureTime;
+    this._time = departureTime;
     this._trainName = trainName;
   }
 
@@ -27,12 +27,12 @@ export class Stop {
     this._arrivalStation = value;
   }
 
-  get departureTime(): Date {
-    return this._departureTime;
+  get time(): Date {
+    return this._time;
   }
 
-  set departureTime(value: Date) {
-    this._departureTime = value;
+  set time(value: Date) {
+    this._time = value;
   }
 
   get trainName(): string {
@@ -44,6 +44,6 @@ export class Stop {
   }
 
   public toString(): string {
-    return this._departureStation + " - " + this._arrivalStation + ", " + this._departureTime + ", " + this._trainName;
+    return this._departureStation + " - " + this._arrivalStation + ", " + this._time + ", " + this._trainName;
   }
 }
