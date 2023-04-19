@@ -1,5 +1,9 @@
 package ztpai.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +20,14 @@ public class StationController {
     @Autowired
     private StationService service;
 
+    @Operation(summary = "Get the current station list from irail.be API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully got the station list.",
+                    content = @Content
+            )
+    })
     @GetMapping(path = "/all")
     public List findAll() {
         return service.findAll();
