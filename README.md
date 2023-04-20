@@ -7,3 +7,7 @@ Uses iRail API (https://docs.irail.be/, https://github.com/iRail)
 Technologies: Spring Boot JPA, Angular, Bootstrap, PostgreSQL
 
 ZTPAI class project
+
+# ERD Diagram
+
+![erd diagram](https://archiwum3.s-ul.eu/nfcipeTX)
